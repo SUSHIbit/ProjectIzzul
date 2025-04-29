@@ -51,6 +51,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/marks/create/{document}', [MarkController::class, 'create'])->name('marks.create');
         Route::post('/marks/{document}', [MarkController::class, 'store'])->name('marks.store');
         Route::get('/marks/summary', [MarkController::class, 'summary'])->name('marks.summary');
+        Route::get('/marks/history/{document}', [MarkController::class, 'history'])->name('marks.history');
     });
 });
 

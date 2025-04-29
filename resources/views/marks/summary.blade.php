@@ -75,7 +75,10 @@
                                         Uploaded By
                                     </th>
                                     <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                        Score
+                                        Your Score
+                                    </th>
+                                    <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-center text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                                        Evaluations
                                     </th>
                                     <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-right text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                                         Actions
@@ -110,20 +113,33 @@
                                                     <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ $document->score_percentage }}%"></div>
                                                 </div>
                                             </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                <div class="text-sm text-gray-500">
+                                                    {{ $document->marks_by_lecturer->count() }} lecturer(s)
+                                                </div>
+                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <button 
-                                                    type="button"
-                                                    class="text-blue-600 hover:text-blue-900"
-                                                    onclick="toggleDetails('details-{{ $document->id }}')"
-                                                >
-                                                    View Details
-                                                </button>
+                                                <div class="flex justify-end space-x-2">
+                                                    <button 
+                                                        type="button"
+                                                        class="text-blue-600 hover:text-blue-900"
+                                                        onclick="toggleDetails('details-{{ $document->id }}')"
+                                                    >
+                                                        View Details
+                                                    </button>
+                                                    <a 
+                                                        href="{{ route('marks.history', $document) }}"
+                                                        class="text-blue-600 hover:text-blue-900"
+                                                    >
+                                                        View Evaluation History
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr id="details-{{ $document->id }}" class="hidden bg-gray-50">
-                                            <td colspan="5" class="px-6 py-4">
+                                            <td colspan="6" class="px-6 py-4">
                                                 <div class="mb-4">
-                                                    <h4 class="text-sm font-medium text-gray-700">Evaluation Details</h4>
+                                                    <h4 class="text-sm font-medium text-gray-700">Your Evaluation Details</h4>
                                                 </div>
                                                 <div class="space-y-4">
                                                     @foreach ($document->marks_by_rubric as $rubricId => $marks)
@@ -154,7 +170,7 @@
                                     @endif
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center">
+                                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center">
                                             <div class="text-sm text-gray-500">No evaluation data found.</div>
                                         </td>
                                     </tr>

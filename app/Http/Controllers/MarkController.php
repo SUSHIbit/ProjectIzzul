@@ -6,6 +6,7 @@ use App\Models\Mark;
 use App\Models\Document;
 use App\Models\Rubric;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -87,7 +88,7 @@ class MarkController extends Controller
         $categoryId = $request->input('category_id');
         $title = $request->input('title');
 
-        $query = Document::with(['category', 'user', 'marks.rubric']);
+        $query = Document::with(['category', 'user', 'marks.rubric', 'marks.user']);
         
         if ($categoryId) {
             $query->where('category_id', $categoryId);
@@ -100,25 +101,85 @@ class MarkController extends Controller
         $documents = $query->get();
         $categories = Category::all();
         
-        // Calculate total score for each document
+        // Process each document to include evaluation data by lecturer
         foreach ($documents as $document) {
-            $document->total_score = $document->marks->sum('score');
+            // Group marks by user (lecturer)
+            $document->marks_by_lecturer = $document->marks->groupBy('user_id');
+            
+            // Calculate total score, max score, and percentage for each lecturer's evaluation
+            foreach ($document->marks_by_lecturer as $userId => $marks) {
+                $totalScore = $marks->sum('score');
+                $maxPossibleScore = 0;
+                
+                // Calculate max possible score for this set of marks
+                foreach ($marks as $mark) {
+                    $maxPossibleScore += $mark->rubric->max_score;
+                }
+                
+                // Store the calculations with the marks
+                $document->marks_by_lecturer[$userId]->total_score = $totalScore;
+                $document->marks_by_lecturer[$userId]->max_possible_score = $maxPossibleScore;
+                $document->marks_by_lecturer[$userId]->score_percentage = $maxPossibleScore > 0 
+                    ? round(($totalScore / $maxPossibleScore) * 100, 2) 
+                    : 0;
+                
+                // Group marks by rubric for display
+                $document->marks_by_lecturer[$userId]->marks_by_rubric = $marks->groupBy('rubric_id');
+            }
+            
+            // For backward compatibility and default display (current user's marks)
+            $currentUserMarks = $document->marks->where('user_id', auth()->id());
+            $document->total_score = $currentUserMarks->sum('score');
             $document->max_possible_score = 0;
             
-            // Group marks by document for display
-            $document->marks_by_rubric = $document->marks->groupBy('rubric_id');
+            // Group marks by rubric for the current user for default display
+            $document->marks_by_rubric = $currentUserMarks->groupBy('rubric_id');
             
-            // Calculate max possible score
-            foreach ($document->marks as $mark) {
+            // Calculate max possible score for current user
+            foreach ($currentUserMarks as $mark) {
                 $document->max_possible_score += $mark->rubric->max_score;
             }
             
-            // Calculate percentage
+            // Calculate percentage for current user
             $document->score_percentage = $document->max_possible_score > 0 
                 ? round(($document->total_score / $document->max_possible_score) * 100, 2) 
                 : 0;
         }
 
         return view('marks.summary', compact('documents', 'categories', 'categoryId', 'title'));
+    }
+
+    /**
+     * Display evaluation history for a specific document.
+     */
+    public function history(Document $document)
+    {
+        $document->load(['category', 'user', 'marks.rubric', 'marks.user']);
+        
+        // Group marks by user (lecturer)
+        $document->marks_by_lecturer = $document->marks->groupBy('user_id');
+        
+        // Calculate total score, max score, and percentage for each lecturer's evaluation
+        foreach ($document->marks_by_lecturer as $userId => $marks) {
+            $totalScore = $marks->sum('score');
+            $maxPossibleScore = 0;
+            
+            // Calculate max possible score for this set of marks
+            foreach ($marks as $mark) {
+                $maxPossibleScore += $mark->rubric->max_score;
+            }
+            
+            // Store the calculations with the marks
+            $document->marks_by_lecturer[$userId]->total_score = $totalScore;
+            $document->marks_by_lecturer[$userId]->max_possible_score = $maxPossibleScore;
+            $document->marks_by_lecturer[$userId]->score_percentage = $maxPossibleScore > 0 
+                ? round(($totalScore / $maxPossibleScore) * 100, 2) 
+                : 0;
+            
+            // Group marks by rubric for display
+            $document->marks_by_lecturer[$userId]->marks_by_rubric = $marks->groupBy('rubric_id');
+        }
+        
+        return view('marks.history', compact('document'));
     }
 }
