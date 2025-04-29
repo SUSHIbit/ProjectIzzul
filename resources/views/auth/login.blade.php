@@ -1,5 +1,15 @@
 <x-guest-layout>
-    <div class="flex flex-col items-center w-full px-4 sm:px-6">
+    <!-- Back to Homepage Link -->
+    <div class="absolute top-4 left-4 sm:top-6 sm:left-6">
+        <a href="/" class="flex items-center text-blue-600 hover:text-blue-800 transition duration-150 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            <span class="font-medium">Back to Homepage</span>
+        </a>
+    </div>
+
+    <div class="flex flex-col items-center mt-16 sm:mt-0">
         <!-- Logo -->
         <div class="mb-6">
             <a href="/" class="flex items-center">
@@ -21,17 +31,17 @@
 
                 <!-- Email Address -->
                 <div>
-                    <x-input-label for="email" :value="__('Email')" class="text-gray-700 text-base" />
-                    <x-text-input id="email" class="block mt-1 w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm text-base sm:text-base" 
+                    <x-input-label for="email" :value="__('Email')" class="text-gray-700" />
+                    <x-text-input id="email" class="block mt-1 w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm" 
                         type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 
                 <!-- Password -->
                 <div class="mt-4">
-                    <x-input-label for="password" :value="__('Password')" class="text-gray-700 text-base" />
+                    <x-input-label for="password" :value="__('Password')" class="text-gray-700" />
 
-                    <x-text-input id="password" class="block mt-1 w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm text-base sm:text-base"
+                    <x-text-input id="password" class="block mt-1 w-full border-blue-200 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm"
                                     type="password"
                                     name="password"
                                     required autocomplete="current-password" />
@@ -47,14 +57,14 @@
                     </label>
                 </div>
 
-                <div class="flex items-center justify-between mt-4 sm:flex-row">
+                <div class="flex items-center justify-end mt-4">
                     @if (Route::has('password.request'))
-                        <a class="text-sm text-blue-600 hover:text-blue-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" href="{{ route('password.request') }}">
+                        <a class="underline text-sm text-blue-600 hover:text-blue-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" href="{{ route('password.request') }}">
                             {{ __('Forgot your password?') }}
                         </a>
                     @endif
 
-                    <x-primary-button class="ml-auto py-2.5 px-5 sm:py-3 sm:px-6 text-base bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:ring-blue-500">
+                    <x-primary-button class="ms-3 bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:ring-blue-500">
                         {{ __('Log in') }}
                     </x-primary-button>
                 </div>
