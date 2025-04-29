@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\RubricController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\MarkController;
+use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,7 +20,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Role pending route - accessible only for authenticated users with 'guest' role
 Route::middleware(['auth'])->group(function () {
+    Route::get('/role-pending', [RoleController::class, 'pending'])->name('role.pending');
+});
+
+// These routes should only be accessible to approved users (admin or lecturer)
+Route::middleware(['auth', 'approved'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     

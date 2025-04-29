@@ -21,6 +21,11 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
+                // Check if the user role is 'guest'
+                if (Auth::guard($guard)->user()->isGuest()) {
+                    return redirect()->route('role.pending');
+                }
+                
                 return redirect(RouteServiceProvider::HOME);
             }
         }

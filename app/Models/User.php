@@ -47,4 +47,14 @@ class User extends Authenticatable
     {
         return $this->role === 'lecturer';
     }
+    
+    public function isGuest()
+    {
+        return $this->role === 'guest';
+    }
+    
+    public function isApproved()
+    {
+        return $this->role === 'admin' || $this->role === 'lecturer';
+    }
 }

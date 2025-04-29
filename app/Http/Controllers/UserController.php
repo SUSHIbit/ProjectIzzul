@@ -12,10 +12,21 @@ class UserController extends Controller
     /**
      * Display a listing of the users.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
-        return view('users.index', compact('users'));
+        // Add filtering to show all users or only pending (guest) users
+        $roleFilter = $request->input('role_filter', 'all');
+        
+        $query = User::query();
+        
+        // Apply role filter if specified
+        if ($roleFilter === 'pending') {
+            $query->where('role', 'guest');
+        }
+        
+        $users = $query->orderBy('role')->get();
+        
+        return view('users.index', compact('users', 'roleFilter'));
     }
 
     /**
@@ -35,7 +46,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:admin,lecturer'],
+            'role' => ['required', 'in:admin,lecturer,guest'],
         ]);
 
         $user = User::create([
@@ -65,7 +76,7 @@ class UserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'role' => ['required', 'in:admin,lecturer'],
+            'role' => ['required', 'in:admin,lecturer,guest'],
         ]);
 
         $user->update([
@@ -94,7 +105,7 @@ class UserController extends Controller
     public function updateRole(Request $request, User $user)
     {
         $request->validate([
-            'role' => ['required', 'in:admin,lecturer'],
+            'role' => ['required', 'in:admin,lecturer,guest'],
         ]);
 
         $user->update([

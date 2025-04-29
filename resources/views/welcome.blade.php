@@ -21,13 +21,14 @@
                 <span class="ml-2 text-xl font-semibold text-blue-800">FYP Evaluation System</span>
             </div>
             
-            <!-- Login Button -->
-            <div>
+            <!-- Auth Buttons -->
+            <div class="flex space-x-3">
                 @if (Route::has('login'))
-                    <div>
+                    <div class="flex space-x-3">
                         @auth
                             <a href="{{ url('/dashboard') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">Dashboard</a>
                         @else
+                            <a href="{{ route('register') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">Register</a>
                             <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">Log in</a>
                         @endauth
                     </div>
@@ -45,7 +46,7 @@
                         @auth
                             <a href="{{ url('/dashboard') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-md text-lg transition duration-150 ease-in-out">Go to Dashboard</a>
                         @else
-                            <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-md text-lg transition duration-150 ease-in-out">Get Started</a>
+                            <a href="{{ route('register') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-md text-lg transition duration-150 ease-in-out">Get Started</a>
                         @endauth
                     @endif
                 </div>
